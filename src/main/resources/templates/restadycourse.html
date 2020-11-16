@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>artco</title>
+    <link rel="shortcut icon" th:href="@{~/images/favicon.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{~/js/bootstrap/dist/css/bootstrap.css}">
+    <script th:src="@{~/js/jquery/dist/jquery.js}"></script>
+    <script th:src="@{~/js/bootstrap/dist/js/bootstrap.js}"></script>
+    <script th:src="@{~/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{~/layui/css/layui.css}">
+    <!--    <script src="../static/layui/lay/modules/laydate.js"></script>-->
+    <style>
+        #hobby cite{
+            display: block;
+            width: 100px;
+        }
+        #test1{
+            z-index: 400;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%;height: 80px;">
+        <div class="layui-inline" style="display: flex;width: 230px;"> <!-- 注意：这一层元素并不是必须的 -->
+            <div id="test1"></div>
+            <button class="layui-btn layui-btn-normal" id="hidBtn">收起</button>
+            <input type="text" name="getLike" class="layui-input" style="width: 300px;margin-left: 50px" placeholder="请输入你感兴趣的内容">
+            <button class="layui-btn layui-btn-normal" id="sertchLike">查找</button>
+            <div id="hobby" style="display: flex;width: 350px;justify-content: space-around" >
+                <cite style="margin-left: 30px">猜你喜欢</cite>
+            </div>
+        </div>
+    </div>
+    <div id="content">
+            <table id="dataTable" lay-filter="test"></table>
+    </div>
+    <script th:inline="javascript">
+
+    layui.use(['laydate','jquery','element','flow','table'], function(){
+        var laydate = layui.laydate;
+        var element = layui.element;
+        var $ = layui.jquery;
+        var flow = layui.flow;
+        var table = layui.table;
+
+        // laydate.path ='../static/layui/lay/modules/laydate';
+        // laydate.render(options);
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+            ,position: 'static'
+            ,change: function(value, date){ //监听日期被切换
+                getContent(`/getDataByDate?date=${value}`);
+            }
+        });
+
+
+
+        $('#serch').click(function (){
+           getContent(`/getDataByDate?date=${$('input[name="getDate"]').val()}`);
+        });
+        $("#sertchLike").click(function (){
+            getContent(`/getGuessLikeList?text=${$('input[name="getLike"]').val()}`)
+        });
+
+
+        $(function (){
+                var hobbys  = ""+[[${session.user.guessHobby} ]];
+                var hobbyList  =hobbys.split(',');
+
+            for (let i = 0; i <hobbyList.length ; i++) {
+                $("#hobby").append(`<cite><a style="color: #00FF00">${hobbyList[i]}</a></cite>`);
+            }
+
+            $('#hobby cite a').click(function (){
+                getContent(`/getGuessLikeList?text=${$(this).text()}`)
+            });
+            $('#hidBtn').click(function (){
+                if($(this).text()=="收起"){
+                    $('#test1').css("visibility","hidden");
+                    $(this).text("展开");
+                }else{
+                    $(this).text("收起");
+                    $('#test1').css("visibility","visible");
+                }
+            });
+
+            });
+        function getContent (urlData){
+            table.render({
+                elem: '#dataTable'
+                ,height: 500
+                ,url: `${urlData}` //数据接口
+                ,page: true //开启分页
+                ,parseData:function (res) {
+                    return{
+                        "code":0,//数据状态
+                        "msg":'',//状态信息
+                        "count":1000,//数据总数
+                        data:res.data
+                    }
+                }
+                ,cols: [
+                    [ //表头
+                        {field: 'id', title: 'ID', width:80,sort: true, fixed: 'left'}
+                        ,{field: 'title', title: '题目', width:280}
+                        ,{field: 'content', title: '内容', width:820}
+                    ]
+                ]
+            });
+        }
+    });
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>artco</title>
+    <link rel="shortcut icon" th:href="@{~/images/favicon.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{~/js/bootstrap/dist/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{~/css/index.css}">
+    <script th:src="@{~/js/jquery/dist/jquery.js}"></script>
+    <script th:src="@{~/js/bootstrap/dist/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{~/css/login/login.css}">
+    <script th:src="@{~/layui/layui.js}"></script>
+    <style>
+        .regist{
+            color: #fff;
+            position: absolute;
+            top: 86%;
+            left: 67%;
+            font-size: 19px;
+        }
+        .shu{
+            color: #fff;
+            position: absolute;
+            top: 86%;
+            left: 64%;
+            font-size: 19px;
+        }
+        .forgetPwd{
+            color: #fff;
+            position: absolute;
+            top: 86%;
+            left: 48%;
+            font-size: 19px;
+        }
+        .login .login-wrap{
+            height: 355px;
+            margin-top: 255px;
+            background-color: #00b3ee;
+        }
+        .login{
+            display: block;
+            background-repeat: no-repeat;
+            width: 100%;
+            background-size: cover;
+            background: url("../static/images/login/loginbgimages.jpg");
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<!-- 登录 -->
+<div class="login" id="loginBg">
+    <div class="login-wrap">
+        <div class="avatar">
+            <img src="../static/images/login/login.png" class="img-circle" alt="">
+        </div>
+        <form action=""  class="col-md-offset-1 col-md-10">
+            <div class="input-group input-group-lg">
+                    <span class="input-group-addon">
+                        <i class="fa fa-id-card-o"></i>
+                    </span>
+                <input type="text"  name="username" class="form-control" required=＂required＂ th:placeholder="请输入电话号码" value="18783948232">
+            </div>
+            <div class="input-group input-group-lg">
+                    <span class="input-group-addon">
+                        <i class="fa fa-key"></i>
+                    </span>
+                <input type="password" name="password" class="form-control" th:placeholder="请输入密码" required=＂required＂ value="zzz123123">
+            </div>
+            <button type="button" class="btn btn-lg btn-danger btn-block" id="loginBtn" th:text="登录"></button>
+        </form>
+        <a href="regist.html" class="regist">前往注册</a>
+        <span class="shu">|</span>
+        <a href="forgetPwd.html" class="forgetPwd">忘记密码</a>
+    </div>
+</div>
+<script>
+    $(function () {
+        layui.use(['layer', 'jquery'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            $('#loginBtn').click(function () {
+                $.ajax({
+                    url: "/login",
+                    type: "post",
+                    data: {
+                        username: $('input[name="username"]').val(),
+                        password: $('input[name="password"]').val(),
+                    },
+                    success: function (res) {
+                        if (res.code==200) {
+                           window.location.href="index.html";
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

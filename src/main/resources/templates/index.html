@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>artco</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{~/layui/css/layui.css}">
+    <script th:src="@{~/layui/layui.js}"></script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">artco练习</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <span style="color: white; font-size: 20px; margin-right: 5px;" th:text="'欢迎你'+${session.user.username}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a id="changePsd">修改密码</a></dd>
+                    <dd><a href="/logout">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul th:if="${not #lists.isEmpty(session.navigationBars)} " id="nav" class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li th:each="navigationBar:${session.navigationBars}" class="layui-nav-item ">
+                    <a th:_href="${navigationBar.menuUrl}">
+                        <span th:text="${navigationBar.id}" style="display: none"></span>
+                        <i th:class="'layui-icon '+${navigationBar.fontClass}"></i>
+                        <cite  th:text="${navigationBar.menuName}"></cite>
+                        <i th:if="${not #lists.isEmpty(navigationBar.children)}" class="iconfont nav_right"></i>
+                    </a>
+                    <ul th:if="${not #lists.isEmpty(navigationBar.children)}" class="layui-nav-child" >
+                        <li th:each="children:${navigationBar.children}" class="layui-nav-children">
+                            <a th:_href="${children.menuUrl}">
+                                <span th:text="${children.id}" style="display: none"></span>
+                                <i th:class="'layui-icon '+${children.fontClass}"></i>
+                                <cite th:text="${children.menuName}"></cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <!-- 主体内容 -->
+    <div class="layui-body" id="LAY_app_body">
+        <div class="layui-tab tab " lay-filter="wenav_tab"  lay-allowclose="true">
+            <ul class="layui-tab-title " id="tabName">
+                <li class="layui-this"  lay-id="1">首页</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show" style="height: 100%;width: 100%">
+                    <iframe src=''  frameborder="0" scrolling="yes" style="height: 100%;width: 100%" class="weIframe"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © artco-ss1.2.1
+    </div>
+</div>
+<script th:inline="javascript">
+
+
+    layui.use(['jquery','layer', 'element'], function() {
+        var $ = layui.jquery;
+        var	layer = layui.layer;
+        var	element = layui.element;
+
+        $(function () {
+//修改密码
+            $('#changePsd').click(function () {
+                let tel =[[${session.user.tel}]];
+                layer.open({
+                    title:'修改密码',
+                    content: `<form class="layui-form" action="" method="post" id="dataForm">
+                                <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                        <input type="text"   name="password"  required  lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                            </div>
+                          </div>
+                                <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                        <input type="text"  name="resPwd"  required  lay-verify="required" placeholder="重新输入密码" autocomplete="off" class="layui-input">
+                            </div>
+                          </div>
+                        </form>`
+                    ,skin: 'layui-layer-molv'
+                    // btn: ['保存', '关闭']
+                    ,yes: function(){
+                        $.ajax({
+                            url: "/newPwd",
+                            type: "post",
+                            data: {
+                                password: $('input[name="password"]').val(),
+                                ResPwd: $('input[name="resPwd"]').val(),
+                                tel: tel,
+                            },
+                            success:function(res){
+                                if(res.code==200) {
+                                    layer.msg(
+                                        res.msg, {
+                                            icon: 1,
+                                            time: 1000
+                                        })
+                                }
+                                else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+
+                    },
+                    resize:false,
+                    fixed:true,
+                    scrollbar:false,
+                });
+            });
+            //点击导航栏添加选项卡
+            $('.layui-nav-item').click(function (event) {
+                //判断是否含有子元素 若没有
+                if(!$(this).children('.layui-nav-child').length){
+                    var url = $(this).children('a').attr('_href');
+                    var title = $(this).find('cite').html();
+                    var id = $(this).find('span').html();
+                    //否则判断该tab项是否以及存在
+                    var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
+                    $.each($(".layui-tab-title li[lay-id]"), function () {
+                        //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
+                        if ($(this).attr("lay-id") == id) {
+                            isData = true;
+                        }
+                    });
+                    if(isData) {
+                        //tab已经存在，直接切换到指定Tab项
+                        element.tabChange('wenav_tab', id); //切换到该选项卡
+                    } else {
+                        //该id不存在，新增一个Tab项
+                        element.tabAdd('wenav_tab', {
+                            title: title,
+                            content: '<iframe tab-id="' + id + '" frameborder="0" src="' + url + '" scrolling="yes" class="weIframe" style="height: 100%;width: 100%"></iframe>',
+                            id: id
+                        });
+                        element.tabChange('wenav_tab', id); //切换到该选项卡
+                    }
+                }
+                //若存在子元素
+                if($(this).children('.layui-nav-child').length) {
+                    event.stopPropagation(); //不触发任何前辈元素上的事件处理函数
+                    $('.layui-nav-children').click(function () {
+                        var url = $(this).children('a').attr('_href');
+                        var title = $(this).find('cite').html();
+                        var id = $(this).find('span').html();
+                        //否则判断该tab项是否以及存在
+                        var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
+                        $.each($(".layui-tab-title li[lay-id]"), function () {
+                            //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
+                            if ($(this).attr("lay-id") == id) {
+                                isData = true;
+                            }
+                        });
+                        if(isData) {
+                            //tab已经存在，直接切换到指定Tab项
+                            element.tabChange('wenav_tab', id); //切换到该选项卡
+                        } else {
+                            //该id不存在，新增一个Tab项
+                            element.tabAdd('wenav_tab', {
+                                title: title,
+                                content: '<iframe tab-id="' + id + '" frameborder="0" src="' + url + '" scrolling="yes" class="weIframe" style="height: 100%;width: 100%"></iframe>',
+                                id: id
+                            });
+                            element.tabChange('wenav_tab', id); //切换到该选项卡
+                        }
+                    });
+                }
+            });
+
+        });
+    });
+
+</script>
+<style>.layui-layer-molv .layui-layer-btn .layui-layer-btn1{
+    background: whitesmoke;
+}
+.layui-layer-molv .layui-layer-btn a{
+    border-color: whitesmoke;
+}
+.layui-tab-content{
+    height: 92%;
+}
+.layui-tab{
+    height: 96%;
+    width: 100%;
+}
+.layui-tab-item{
+    height: 96%;
+}
+</style>
+</body>
+</html>

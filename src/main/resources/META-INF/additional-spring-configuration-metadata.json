@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.mvc.redis.database",
+      "type": "java.lang.String",
+      "description": "Description for spring.mvc.redis.database."
+  }
+] }

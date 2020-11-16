@@ -1,0 +1,24 @@
+
+
+.login .login-wrap{
+    height: 550px;
+    margin-top: 116px;
+}
+.loginbtn{
+    /*display: block;*/
+    color: #fff;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}
+.login{
+    display: block;
+    /*background: url("../static/images/login/loginbgimages.png");*/
+    background-repeat: no-repeat;
+    width: 100%;
+    background-size: cover;
+}
+*{
+    margin: 0;
+    padding: 0;
+}

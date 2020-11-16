@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunchuang.artco.dao.CheackPhoneMapper" >
+  <resultMap id="BaseResultMap" type="com.yunchuang.artco.domain.CheackPhone" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="ip_addr" property="ipAddr" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="code_suffix" property="suffix"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cheack_phone
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunchuang.artco.domain.CheackPhone" >
+    insert into cheack_phone (id, tel, code, 
+      ip_addr, time,code_suffix)
+    values (#{id,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, 
+      #{ipAddr,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP},#{suffix})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.yunchuang.artco.domain.CheackPhone" >
+    update cheack_phone
+    set tel = #{tel,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      ip_addr = #{ipAddr,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="setNullByCode">
+    update `cheack_phone` set code = null where code=#{code}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select id, tel, code, ip_addr, time
+    from cheack_phone
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, tel, code, ip_addr, time
+    from cheack_phone
+  </select>
+  <select id="selectByPhone" resultMap="BaseResultMap">
+    select  * from cheack_phone where code=#{code}
+  </select>
+  <select id="selectTels" resultMap="BaseResultMap">
+    select * from  cheack_phone where tel=#{tel}
+  </select>
+</mapper>

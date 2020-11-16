@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunchuang.artco.dao.HistoryTodayMapper" >
+  <resultMap id="BaseResultMap" type="com.yunchuang.artco.domain.HistoryToday" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="date" property="date" jdbcType="TIMESTAMP" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from history_today
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunchuang.artco.domain.HistoryToday" >
+    insert into history_today (id, day, date, 
+      title, content)
+    values (#{id,jdbcType=BIGINT}, #{day,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP}, 
+      #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.yunchuang.artco.domain.HistoryToday" >
+    update history_today
+    set day = #{day,jdbcType=VARCHAR},
+      date = #{date,jdbcType=TIMESTAMP},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, day, date, title, content
+    from history_today
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, day, date, title, content
+    from history_today
+  </select>
+  <select id="selectByDate" resultMap="BaseResultMap" >
+    select * from history_today where date = #{date} order by id limit #{page},#{limit}
+  </select>
+  <select id="GuessLike" resultMap="BaseResultMap">
+    select * from history_today where title like concat("%",#{text},"%") order by id limit #{page},#{limit}
+  </select>
+
+  <select id="getOneMonth" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from history_today where date between concat('2020-',#{i},'-01') and concat('2020-',#{i},'-30')
+  </select>
+</mapper>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>artco</title>
+    <link rel="stylesheet" th:href="@{~/layui/css/layui.css}">
+    <script th:src="@{~/layui/layui.js}"></script>
+    <script th:src="@{~/js/jquery/dist/jquery.js}"></script>
+    <style>
+        .text{
+            display: block;
+            font-size: 14px;
+            margin-top: 100px;
+            margin-left: 113px;
+            margin-bottom:20px;
+        }
+        .nav_a{
+            width: 200px;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            position: absolute;
+            right: 2%;
+            top: 1%;
+        }
+        .layui-input, .layui-textarea{
+            display: inline;
+            padding: 0;
+        }
+        .layui-btn-sm{
+            height: 36px;
+            margin-left: 5px;
+            display: block;
+            font-size: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="nav_a">
+    <a href="login.html">返回登录</a>
+    <span>|</span>
+    <a href="regist.html">现在注册</a>
+</div>
+<div>
+    <div class="layui-form-item">
+        <label class="text">请填写您需要找回的帐号</label>
+        <div class="layui-input-block" style="margin-bottom: 20px;">
+            <input type="text" name="title" required  lay-verify="required"
+                   placeholder="电话号码" autocomplete="off"
+                   class="layui-input" id="tel" style="width: 30%">
+        </div>
+        <div class="layui-input-block">
+            <button type="button"class="layui-btn layui-btn-normal" id="nextBtn" style="width: 400px;margin-left: 15px">下一步</button>
+        </div>
+    </div>
+</div>
+<script>
+    //Demo
+    layui.use(['jquery','form','layer'], function(){
+        let form = layui.form;
+        let layer =layui.layer;
+        let $ = layui.jquery;
+        form.render();
+        $(function (){
+            $('#nextBtn').click(function (){
+                let tel=$('#tel').val();
+                if(!(/^1[3456789]\d{9}$/.test(tel))){
+                    layer.msg("电话输入有误");
+                    return false;
+                }
+                layer.open({
+                    title: '修改密码'
+                    ,content: '<form class="layui-form" action="" method="post" id="dataForm">' +
+                        '  <div class="layui-form-item">' +
+                        '    <label class="layui-form-label">电话</label>' +
+                        '    <div class="layui-input-inline">' +
+                        `<input type="text" id="tel"  name="tel" value="${tel}" required  lay-verify="required" placeholder="请输入电话号码" autocomplete="off" class="layui-input" readonly="readonly">` +
+                        '    </div>' +
+                        '  </div>' +
+                        '  <div class="layui-form-item">' +
+                        '    <label class="layui-form-label">验证码</label>' +
+                        '    <div class="layui-input-inline" style="display: flex;justify-content: space-around">' +
+                        '      <input type="text"  name="code" required lay-verify="required" style="width: 55%" placeholder="请输入验证码" autocomplete="off" class="layui-input">' +
+                        `<button type="button" id="sendMsgs" class="layui-btn layui-btn-sm" onclick="sendMsg(${tel})" >发送验证码</button>`+
+                        '    </div>' +
+                        '  </div>' +
+                        '</form>'
+                    ,yes:function () {
+                        $.ajax({
+                            url: "/resetPwd",
+                            type : "post",
+                            data : {
+                                code:$('input[name="code"]').val(),
+                                tel:$('input[name="tel"]').val()
+                            },
+                            success:function(res){
+                                if(res.code==200) {
+                                    layer.msg(
+                                        res.msg, {
+                                            icon: 1,
+                                            time: 1000
+                                        },
+                                        function (){
+                                            layer.open({
+                                                title: '修改密码'
+                                                ,content: '<form class="layui-form" action="" method="post" id="dataForm">' +
+                                                    '  <div class="layui-form-item">' +
+                                                    '    <div class="layui-input-inline" style="display: flex;justify-content: space-around">' +
+                                                    '      <input type="password"  name="password" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">' +
+                                                    '    </div>' +
+                                                    '  </div>' +
+                                                    '  <div class="layui-form-item">' +
+                                                    '    <div class="layui-input-inline" style="display: flex;justify-content: space-around">' +
+                                                    '      <input type="password"  name="ResPwd" required lay-verify="required" placeholder="请再次输入密码" autocomplete="off" class="layui-input">' +
+                                                    '    </div>' +
+                                                    '  </div>' +
+                                                    '</form>'
+                                                ,yes:function () {
+                                                    $.ajax({
+                                                        url: "/newPwd",
+                                                        type : "post",
+                                                        data : {
+                                                            password:$('input[name="password"]').val(),
+                                                            ResPwd:$('input[name="ResPwd"]').val(),
+                                                            tel:$('#tel').val(),
+                                                        },
+                                                        success:function(res){
+                                                            if(res.code==200) {
+                                                                layer.msg(
+                                                                    res.msg, {
+                                                                        icon: 1,
+                                                                        time: 1000
+                                                                    },
+                                                                    function (){
+                                                                        window.location.href="login.html";
+                                                                    });
+                                                            }
+                                                            else {
+                                                                layer.msg(res.msg);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        });
+                                }
+                                else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    });
+    function sendMsg(tel){
+        $('#sendMsgs').attr("disabled","true");
+        $('#sendMsgs').removeClass("layui-btn layui-btn-sm");
+        let count=60;
+        let timer = setInterval(function (){
+            if(count==0){
+                clearInterval(timer);
+                timer=null;
+                $('#sendMsgs').removeAttr("disabled");
+                $('#sendMsgs').addClass("layui-btn layui-btn-sm");
+                $('#sendMsgs').text(`点击发送`);
+            }else {
+                $('#sendMsgs').text(`请${count}s重试发送`);
+            }
+            count--;
+        },1000);
+        $.ajax({
+            url:'/getMSg',
+            data:{
+                tel:tel
+            },
+            type: 'get'
+        });
+    }
+
+</script>
+</body>
+</html>

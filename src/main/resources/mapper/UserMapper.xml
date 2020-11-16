@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunchuang.artco.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.yunchuang.artco.domain.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="GUESSHOBBY" property="guessHobby" jdbcType="VARCHAR"/>
+    <result column="tel" property="tel" jdbcType="VARCHAR"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.yunchuang.artco.domain.User" >
+    insert into user (id, username, password,tel
+      )
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},#{tel}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.yunchuang.artco.domain.User" >
+    update user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updatePwd" parameterType="java.lang.String">
+    update user set password =#{password} where tel=#{tel}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select id, username, password
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, username, password ,GUESSHOBBY
+    from user
+  </select>
+
+  <select id="loginSelect" resultMap="BaseResultMap">
+    select * from `user` where tel=#{tel} and password=#{password}
+  </select>
+  <select id="selectTel" resultMap="BaseResultMap">
+    select * from `user` where tel=#{telCookie}
+  </select>
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from `user` where username=#{username}
+  </select>
+</mapper>

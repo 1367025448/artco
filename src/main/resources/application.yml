@@ -1,0 +1,74 @@
+#配置端口号为8080
+server:
+  port: 8080
+#配置前端控制器 在服务器运行时加载
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+      #配置redis
+  redis:
+    database: 0
+    host: 118.31.245.26
+    port: 6379
+    pool:
+      maxActive: 8
+        #连接池最大阻塞等待时间（使用负值表示没有限制）
+      maxWait: -1
+        #连接池中的最大空闲连接
+      maxIdle: 8
+        #连接池中的最小空闲连接
+      minIdle: 0
+    timeout: 300000
+  #连接数据库
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/artco?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT
+    username: root
+    password: king
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #配置取消HTML缓存
+
+
+  thymeleaf:
+    cache: false
+    mode: HTML5
+    encoding: UTF-8
+    enabled: true
+    #国际化
+  messages:
+    basename: i18n.login
+#配置日志级别为debug
+logging:
+  level:
+    com.fq: debug
+#配置mybatis
+mybatis:
+  #配置mapper.xml文件路径
+  mapper-locations: mapper/*.xml
+  #配置别名
+  #type-aliases-package: com.fq.domain
+  #配置驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+
+
+
+
+

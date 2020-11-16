@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>artco</title>
+    <link rel="shortcut icon" href="../static/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/js/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/js/jquery/dist/jquery.js"></script>
+    <script src="../static/js/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="../static/css/login/login.css">
+    <script src="../static/layui/layui.js"></script>
+    <style>
+        .login .login-wrap{
+            height: 600px;
+            margin-top: 116px;
+            background: url("../static/images/login/loginuser.jpg") no-repeat;
+        }
+        .loginbtn{
+            /*display: block;*/
+            color: #fff;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+
+        }
+        .login{
+            display: block;
+            background-repeat: no-repeat;
+            width: 100%;
+            background-size: cover;
+            background: url("../static/images/login/loginbgimages.jpg");
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .alert-warning{
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+<!-- 登录 -->
+<div class="login" id="loginBg">
+    <div class="login-wrap">
+        <a href="/login.html" class="loginbtn">返回登录</a>
+        <div class="avatar">
+            <img src="../static/images/login/login.png" class="img-circle" alt="">
+        </div>
+
+        <form action=""  class="col-md-offset-1 col-md-10">
+            <div class="input-group input-group-lg">
+                    <span class="input-group-addon">
+                        <i class="fa fa-id-card-o"></i>
+                    </span>
+                <input type="text"  name="username" class="form-control" required=＂required＂ th:placeholder="请输入用户名">
+            </div>
+            <div class="input-group input-group-lg">
+                    <span class="input-group-addon">
+                        <i class="fa fa-key"></i>
+                    </span>
+                <input type="password" name="password" class="form-control" th:placeholder="请输入密码" required=＂required＂>
+                <span class="input-group-addon">
+                        <i class="fa fa-key"></i>
+                    </span>
+            </div>
+            <div class="input-group input-group-lg">
+                    <span class="input-group-addon">
+                        <i class="fa fa-key"></i>
+                    </span>
+                <input type="password" name="ResPassword" class="form-control" th:placeholder="请再次输入密码" required=＂required＂>
+                <span class="input-group-addon">
+                        <i class="fa fa-key"></i>
+                    </span>
+            </div>
+            <div class="input-group input-group-lg">
+                <input type="text" name="tel" class="form-control"style="width: 250px;" th:placeholder="请输入电话号码" id="tel" required=＂required＂>
+                <button id="sendMsg"  class="btn btn-success" style="display: inline-block;margin-left:20px;width: 100px;height: 50px">发送短信</button>
+            </div>
+            <div class="input-group input-group-lg">
+                <input type="text" name="code" class="form-control"style="width: 385px;" th:placeholder="请输入短信验证码" id="code" required=＂required＂>
+            </div>
+            <div class="alert alert-warning" role="alert">密码不能少于8位和空白字符,且必须有数字字母组合</div>
+            <button type="button" class="btn btn-lg btn-danger btn-block" id="registBtn" th:text="注册"></button>
+        </form>
+    </div>
+</div>
+<script>
+    $(function () {
+        layui.use(['layer','jquery'],function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            $('#registBtn').click(function () {
+                let tel=$('#tel').val();
+                if(!(/^1[3456789]\d{9}$/.test(tel))){
+                    layer.msg("电话输入有误");
+                    return false;
+                }
+                $.ajax({
+                    url: "/regist",
+                    type : "post",
+                    data : {
+                        username:$('input[name="username"]').val(),
+                        password:$('input[name="password"]').val(),
+                        code:$('input[name="code"]').val(),
+                        phone:tel,
+                        ResPassword:$('input[name="ResPassword"]').val(),
+                    },
+                    success:function(res){
+                        if(res.code==200) {
+                            layer.msg(
+                                res.msg, {
+                                    icon: 1,
+                                    time: 1000
+                                },
+                                function (){
+                                window.location.href="/login.html";
+                            });
+                        }
+                        else {
+                            layer.msg(res.msg);
+                        }
+                    }
+                });
+            });
+            $('#sendMsg').click(function (){
+                let tel=$('#tel').val();
+                if(!(/^1[3456789]\d{9}$/.test(tel))){
+                    layer.msg("电话输入有误");
+                    return false;
+                }
+                $('#sendMsg').attr("disabled","true");
+                $('#sendMsg').removeClass("btn btn-success");
+                let count=60;
+                let timer = setInterval(function (){
+                    if(count==0){
+                        clearInterval(timer);
+                        timer=null;
+                        $('#sendMsg').removeAttr("disabled");
+                        $('#sendMsg').text(`点击发送`);
+                        $('#sendMsg').addClass("btn btn-success");
+                    }else {
+                        $('#sendMsg').text(`请隔${count}s后重新发送`);
+                    }
+                    count--;
+                },1000);
+                $.ajax({
+                    url:'/getMSg',
+                    data:{
+                        tel:$('input[name="tel"]').val()
+                    },
+                    type : "get",
+                    success:function(res){
+                        layer.msg(res.msg);
+                    }
+                });
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>
