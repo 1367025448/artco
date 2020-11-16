@@ -6,7 +6,7 @@ public class Test {
 
     public static void main(String[] args) {
         RedisTemplate<Object, Object> objectObjectRedisTemplate = new RedisTemplate<>();
-        objectObjectRedisTemplate.opsForList().leftPush("sds","sdsd");
+        objectObjectRedisTemplate.opsForList().leftPush("sds","sds2222d");
 
     }
 }
