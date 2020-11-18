@@ -11,14 +11,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("login.html");
-        registry.addViewController("/logout").setViewName("login.html");
-        registry.addViewController("/login.html").setViewName("login.html");
-        registry.addViewController("/regist.html").setViewName("regist.html");
-        registry.addViewController("/forgetPwd.html").setViewName("forgetPwd.html");
-        registry.addViewController("/index.html").setViewName("index.html");
-        registry.addViewController("/restadycourse").setViewName("restadycourse.html");
-        registry.addViewController("/diverTest").setViewName("diverTest.html");
+        registry.addViewController("/").setViewName("login");
+        registry.addViewController("/logout").setViewName("login");
+        registry.addViewController("/login.html").setViewName("login");
+        registry.addViewController("/regist.html").setViewName("regist");
+        registry.addViewController("/forgetPwd.html").setViewName("forgetPwd");
+        registry.addViewController("/index.html").setViewName("index");
+        registry.addViewController("/restadycourse").setViewName("restadycourse");
+        registry.addViewController("/diverTest").setViewName("diverTest");
 
     }
 
